@@ -282,7 +282,7 @@ def run_gridding_for_config(input_file, x_inc, y_inc, weighting_mode):
     
     cells_with_data = sum(1 for nodes in grid_cells.values() if len(nodes) > 0)
     total_cells = len(grid_cells)
-    print(f"\nGrid Statistics:")
+    print("\nGrid Statistics:")
     print(f"Total nodes assigned: {nodes_assigned}")
     print(f"Cells with data: {cells_with_data} out of {total_cells} ({cells_with_data/total_cells*100:.1f}%)")
     print("Saving results (SWA_source_to_station geometric (circular) averages)...")
