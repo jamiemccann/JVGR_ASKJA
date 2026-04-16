@@ -1,0 +1,4 @@
+# GMT 6 Session common arguments shelf
+BEGIN GMT 6.3.0
+R	/raid2/jam247/JVGR_ASKJA/gmt_data/IcelandDEM_20m_subset.grd
+END
