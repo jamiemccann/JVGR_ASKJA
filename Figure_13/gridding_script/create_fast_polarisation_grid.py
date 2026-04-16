@@ -271,7 +271,7 @@ def calculate_circular_mean(angles, weights):
     return mean_angle_deg
 
 def calculate_mean_resultant_vector(angles, weights):
-    """Calculate the mean resultant vector length of angles in degrees and perform weighted Rayleigh test
+    """Calculate mean resultant vector length and weighted Rayleigh p-value.
     
     Parameters
     ----------
@@ -285,7 +285,7 @@ def calculate_mean_resultant_vector(angles, weights):
     R : float
         Mean resultant vector length
     p_value : float
-        P-value from weighted Rayleigh test
+        P-value from the weighted Rayleigh test approximation
     """
     # Convert angles to radians and multiply by 2 for axial data (same as calculate_circular_mean)
     angles_rad = np.radians(angles) * 2
@@ -297,15 +297,21 @@ def calculate_mean_resultant_vector(angles, weights):
     # Calculate mean resultant vector length
     R = np.sqrt(x**2 + y**2) / np.sum(weights)
     
-    # Calculate weighted Rayleigh test statistic
-    # Effective sample size for weighted data
-    n_eff = (np.sum(weights))**2 / np.sum(weights**2)
-    
-    # Test statistic: Z = n_eff * R^2
-    Z = n_eff * R**2
-    
-    # Calculate p-value (approximation for large n_eff)
-    p_value = np.exp(-Z)
+    # Treat the weighted sample as replicated observations with total count W.
+    # This gives the weighted Rayleigh z-statistic z = W * Rbar^2, followed by
+    # the standard large-sample tail approximation and small-sample correction.
+    total_weight = np.sum(weights)
+    z = total_weight * R**2
+    p_value = np.exp(-z)
+
+    if total_weight < 50:
+        correction = (
+            1.0
+            + (2.0 * z - z**2) / (4.0 * total_weight)
+            - (24.0 * z - 132.0 * z**2 + 76.0 * z**3 - 9.0 * z**4)
+            / (288.0 * total_weight**2)
+        )
+        p_value *= correction
     
     return R, p_value
 
